@@ -2,9 +2,10 @@ from enum import Enum
 
 class TaskState(Enum):
     none = 0
-    waiting = 1
-    running = 2
-    success = 3
-    failed = 4
-    restarting = 5
+    scheduled = 1
+    waiting = 2
+    running = 3
+    success = 4
+    failed = 5
+    restarting = 6
 

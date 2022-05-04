@@ -28,6 +28,13 @@ class ParallelProcessor:
 
         return outputs
 
-    def terminate_tasks(self):
+    def __terminate_tasks(self):
         self.pool.terminate()
+
+    def set_state(self, state):
+        if state.value == 5:
+            self.__terminate_tasks()
+
+
+
 
