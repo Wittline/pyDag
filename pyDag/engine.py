@@ -1,4 +1,4 @@
-from scripts_handler import ScriptHanlder as sh
+from script_handler import ScriptHandler
 from pyDag.scripts import pyscripts
 
 class Engine:
@@ -11,8 +11,9 @@ class Engine:
     def __get_url_engine():
 
 
-    def run(self, script):
-        sh.format_script
+    def run(self):
+        sh = ScriptHandler(self.script, self.params, self.id)
+        sh.format_script()
         self.run()
 
 
