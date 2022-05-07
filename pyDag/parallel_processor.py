@@ -5,8 +5,7 @@ class ParallelProcessor:
 
     def __init__(self, cpus):   
         self.cpus = cpus
-        self.pool = None 
-        
+        self.pool = None        
     
     def __execute_task(self, task, func):
 
