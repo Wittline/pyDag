@@ -1,5 +1,5 @@
 from logging import exception
-from task_state import TaskState
+from enums import TaskState
 from engine import Engine
 
 class Task(Engine):

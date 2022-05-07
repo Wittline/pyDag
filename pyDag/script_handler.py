@@ -1,17 +1,7 @@
 from enum import Enum
 import importlib
 import json
-
-
-class TypeScript(Enum):
-    pyScripts  = 0
-    sqlScripts = 1
-
-class ScriptStorage(Enum):
-    local = 0
-    gcp = 1
-    aws = 2
-    database = 3
+from enums import TypeScript, ScriptStorage
 
 class ScriptHandler:
 
@@ -33,7 +23,7 @@ class ScriptHandler:
         else:
             raise Exception("Type script not found: {0}".format(scr))
         
-        return plugin.get_script(name, params)
+        return plugin.get_script(name, params), typescript
   
 
     def __get_connections(self, p_dict):
@@ -62,8 +52,7 @@ class ScriptHandler:
             params = self.__get_parameters(p_dict)
             connections = self.__get_connections(p_dict)
             variables = self.__get_variables(p_dict)
-            script = self.__get_script(_path, params)
-            return script
+            return self.__get_script(_path, params)
         else:
             raise Exception("Path incomplete for script {0} in task id {1}".format(self.script, self.id))
 
