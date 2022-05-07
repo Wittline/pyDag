@@ -12,6 +12,7 @@ class Engine(ScriptHandler, LivyClient, GCPClient):
         ScriptHandler().__init__(self, id, params, script)
         LivyClient().__init__(self)
         GCPClient().__init__(self)
+        
 
     def run(self):
         script = self.format_script()
