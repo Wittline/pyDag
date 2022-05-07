@@ -10,7 +10,7 @@ class Task(Engine):
         self.params = params
         self.script = script
         self.state = TaskState.none
-        super().__init__(self, id, params, script)        
+        super().__init__(self, id, params, script)
         
         
 
