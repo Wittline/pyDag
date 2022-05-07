@@ -1,19 +1,21 @@
 from script_handler import ScriptHandler
-from pyDag.scripts import pyscripts
+from livy.client import LivyClient
+from gcp.client import GCPClient
 
-class Engine:
+class Engine(ScriptHandler, LivyClient, GCPClient):
 
     def __init__(self, id, params, script):
         self.id = id
         self.params = params
         self.script = script
-    
-    def __get_url_engine():
+        ScriptHandler().__init__(self, id, params, script)
+        LivyClient().__init__(self)
+        GCPClient().__init__(self)
 
 
     def run(self):
-        sh = ScriptHandler(self.script, self.params, self.id)
-        sh.format_script()
-        self.run()
+        script = self.format_script()
+        self.run_script(script, self.__get_url_engine())
+
 
 

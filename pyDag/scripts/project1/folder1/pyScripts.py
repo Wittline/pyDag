@@ -4,7 +4,6 @@ valor1 = {valor1}
 valor2 = {valor2}
 valor3 = {valor3}
 
-
 """
 
 class pyScripts:
