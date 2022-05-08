@@ -10,17 +10,18 @@ class Engine(ScriptHandler, LivyClient, BQClient):
         self.id = id
         self.params = params
         self.script = script
-        ScriptHandler().__init__(self, id, params, script)
-        LivyClient().__init__(self)
-        BQClient().__init__(self)
+        ScriptHandler.__init__(self, id, params, script)
+        LivyClient.__init__(self, id)
+        BQClient.__init__(self, id)
 
 
-    def run(self):        
-        script, typeS = self.format_script()
+    def run(self):
+        script, typeS = ScriptHandler.format_script()
         if typeS == TypeScript.pyScripts:
-            self.run_livy_script(script)
+            LivyClient.run_script(script)
         elif typeS == TypeScript.sqlScripts:
-            self.run_BQ_script(script)
+            BQClient.run_script(script)
         else:
-            raise Exception("Engine not found for script {0} in task id {1}".format(self.script, self.id))
+            raise EngineNotFoundError(
+                "Engine not found for script {0} in task id {1}".format(self.script, self.id))
 

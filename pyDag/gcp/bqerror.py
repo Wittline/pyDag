@@ -1,0 +1,2 @@
+class BQError(Exception):
+    pass
