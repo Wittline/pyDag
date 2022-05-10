@@ -23,5 +23,6 @@ class Engine(ScriptHandler, LivyClient, BQClient):
             BQClient.run_script(script)
         else:
             raise EngineNotFoundError(
-                "Engine not found for script {0} in task id {1}".format(self.script, self.id))
+                "Engine not found for script {0} in task id {1}"
+                .format(self.script, self.id))
 
