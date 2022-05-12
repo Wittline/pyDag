@@ -16,8 +16,8 @@ class TaskState(Enum):
     restarting = 6
 
 class TypeScript(Enum):
-    pyScripts  = 0
-    sqlScripts = 1
+    pyScripts  = 1
+    sqlScripts = 0
 
 class ScriptStorage(Enum):
     local = 0
