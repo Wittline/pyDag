@@ -18,8 +18,8 @@ class Engine(ScriptHandler, EngineHandler):
 
 
     def run(self):
-        script, typeEngine = ScriptHandler.format_script()
-        EngineHandler.run_script(script, typeEngine)
+        script, typeengine = ScriptHandler.format_script()
+        EngineHandler.run_script(script, typeengine)
         # if typeS == TypeScript.pyScripts:
         #     LivyClient.run_script(script)
         # elif typeS == TypeScript.sqlScripts:

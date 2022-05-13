@@ -16,8 +16,8 @@ class EngineHandler:
         
         _path = config_engine.split(".")
         mod = importlib.import_module(config_engine, ".")
-        cls = getattr(mod, _path[-1])        
-        return cls() 
+        cls = getattr(mod, _path[-1])
+        return cls()
         
 
     def run_script(self, script, typeEngine):
