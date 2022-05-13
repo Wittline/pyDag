@@ -1,6 +1,5 @@
 import configparser
 import importlib
-from enums import TypeEngine
 
 class EngineHandler:
 
@@ -10,7 +9,7 @@ class EngineHandler:
     def __get_engine_config(self, typeEngine):
         config = configparser.ConfigParser()
         config.read_file(open('config.cfg'))
-        return config.get('engines', typeEngine)
+        return config.get('engines', typeEngine.name)
 
     def __create_engine(self, config_engine):
         
@@ -20,9 +19,9 @@ class EngineHandler:
         return cls()
         
 
-    def run_script(self, script, typeEngine):
+    def run_script(self, script, typeengine):
         
-        config_engine = self.__get_engine_config(typeEngine)
+        config_engine = self.__get_engine_config(typeengine)
         engine = self.__create_engine(config_engine)
         return engine.run_script(script)
 
