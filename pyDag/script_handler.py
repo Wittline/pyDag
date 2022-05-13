@@ -1,7 +1,7 @@
 from enum import Enum
 import importlib
 import json
-from enums import TypeScript, ScriptStorage
+from enums import TypeScript, TypeEngine, ScriptStorage
 
 class ScriptHandler:
 
@@ -12,18 +12,23 @@ class ScriptHandler:
 
     def __get_local_scripts(self, scr, name, params):
 
-        typescript = TypeScript[scr[-1]]
-
+        typescript = TypeScript[scr[-1]].name
+        typeengine = TypeEngine[scr[-2]]
+        
         mod = importlib.import_module("scripts." + '.'.join(scr), ".")
 
-        if typescript == TypeScript.pyScripts:
-            plugin = mod.pyScripts()
-        elif typescript == TypeScript.sqlScripts:
-            plugin = mod.sqlScripts()
-        else:
-            raise Exception("Type script not found: {0}".format(scr))
+        cls = getattr(mod, typescript)
+
+        return cls.get_script(name, params), typeengine
+
+        # if typescript == TypeScript.pyScripts:
+        #     plugin = mod.pyScripts()
+        # elif typescript == TypeScript.sqlScripts:
+        #     plugin = mod.sqlScripts()
+        # else:
+        #     raise Exception("Type script not found: {0}".format(scr))
         
-        return plugin.get_script(name, params), typescript
+        # return plugin.get_script(name, params), typeengine
   
 
     def __get_connections(self, p_dict):
@@ -37,10 +42,10 @@ class ScriptHandler:
         return {k: v for k, v in p_dict.items()
             if k[0] != '*'}                            
 
-    def __get_script(self, _path):
+    def __get_script(self, _path, params):
 
         if _path[0] == ScriptStorage.local.name:
-            return self.__get_local_scripts(_path[1:-1], _path[-1])
+            return self.__get_local_scripts(_path[1:-1], _path[-1], params)
         else:
             raise Exception("Location script not found: {0}".format(_path))
 
@@ -48,7 +53,7 @@ class ScriptHandler:
     def format_script(self):
         _path = self.script.split('.')
         p_dict  = json.loads(self.params.replace("'",'"'))
-        if len(_path) == 5 and len(p_dict.keys()) > 0:
+        if len(_path) == 6 and len(p_dict.keys()) > 0:
             params = self.__get_parameters(p_dict)
             connections = self.__get_connections(p_dict)
             variables = self.__get_variables(p_dict)
