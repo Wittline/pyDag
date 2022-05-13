@@ -12,12 +12,12 @@ class ScriptHandler:
 
     def __get_local_scripts(self, scr, name, params):
 
-        typescript = TypeScript[scr[-1]].name
+        typescript = TypeScript[scr[-1]]
         typeengine = TypeEngine[scr[-2]]
         
         mod = importlib.import_module("scripts." + '.'.join(scr), ".")
 
-        cls = getattr(mod, typescript)
+        cls = getattr(mod, typescript.name)
 
         return cls.get_script(name, params), typeengine
 
