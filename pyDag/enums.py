@@ -19,6 +19,10 @@ class TypeScript(Enum):
     pyScripts  = 0
     sqlScripts = 1
 
+class TypeEngine(Enum):
+    bq  = 0
+    spark = 1
+
 class ScriptStorage(Enum):
     local = 0
     gcp = 1
