@@ -13,22 +13,10 @@ class ScriptHandler:
     def __get_local_scripts(self, scr, name, params):
 
         typescript = TypeScript[scr[-1]]
-        typeengine = TypeEngine[scr[-2]]
-        
+        typeengine = TypeEngine[scr[-2]]    
         mod = importlib.import_module("scripts." + '.'.join(scr), ".")
-
         cls = getattr(mod, typescript.name)
-
         return cls.get_script(name, params), typeengine
-
-        # if typescript == TypeScript.pyScripts:
-        #     plugin = mod.pyScripts()
-        # elif typescript == TypeScript.sqlScripts:
-        #     plugin = mod.sqlScripts()
-        # else:
-        #     raise Exception("Type script not found: {0}".format(scr))
-        
-        # return plugin.get_script(name, params), typeengine
   
 
     def __get_connections(self, p_dict):
