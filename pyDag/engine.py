@@ -10,8 +10,7 @@ class Engine(ScriptHandler, EngineHandler):
         self.script = script
         ScriptHandler.__init__(self, id, params, script)
         EngineHandler.__init__(self, id)
-
-
+    
     def run(self):
         script, typeengine = ScriptHandler.format_script()
         EngineHandler.run_script(script, typeengine)

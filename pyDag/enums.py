@@ -23,9 +23,9 @@ class TypeEngine(Enum):
     bq  = 0
     spark = 1
 
-class ScriptStorage(Enum):
+class TypeStorage(Enum):
     local = 0
-    gcp = 1
-    aws = 2
+    gcs = 1
+    s3 = 2
     database = 3    
 

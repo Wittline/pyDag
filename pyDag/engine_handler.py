@@ -18,6 +18,7 @@ class EngineHandler:
         cls = getattr(mod, _path[-1])
         return cls
         
+        return cls                
 
     def run_script(self, script, typeengine):
         

@@ -1,7 +1,7 @@
 from enum import Enum
 import importlib
 import json
-from enums import TypeScript, TypeEngine, ScriptStorage
+from enums import TypeScript, TypeEngine, TypeStorage
 
 class ScriptHandler:
 
@@ -10,14 +10,21 @@ class ScriptHandler:
         self.script = script
         self.params = params
 
-    def __get_local_scripts(self, scr, name, params):
+    def __get_local_scripts(self, _path, params):
 
-        typescript = TypeScript[scr[-1]]
-        typeengine = TypeEngine[scr[-2]]    
-        mod = importlib.import_module("scripts." + '.'.join(scr), ".")
-        cls = getattr(mod, typescript.name)
-        return cls.get_script(name, params), typeengine
-  
+        typeengine =  TypeEngine[_path[-2]]
+        scriptname = _path[-1]
+        _path.remove(typeengine)                        
+        mod = importlib.import_module("scripts." + '.'.join(_path[1:-1]), ".")
+        cls = getattr(mod, scriptname)
+        return cls.get_script(scriptname, params), typeengine
+
+    def __get_gcs_scripts(self, scr, name, params):
+        pass
+
+    def __get_s3_scripts(self, scr, name, params):
+        pass
+
 
     def __get_connections(self, p_dict):
         return {k: v for k, v in p_dict.items() if k[0:2] == '**'}
@@ -32,8 +39,10 @@ class ScriptHandler:
 
     def __get_script(self, _path, params):
 
-        if _path[0] == ScriptStorage.local.name:
-            return self.__get_local_scripts(_path[1:-1], _path[-1], params)
+        typestorage = TypeStorage[_path[0]]
+                
+        if typestorage == TypeStorage.local:
+            return self.__get_local_scripts(_path, params)
         else:
             raise Exception("Location script not found: {0}".format(_path))
 
@@ -41,7 +50,7 @@ class ScriptHandler:
     def format_script(self):
         _path = self.script.split('.')
         p_dict  = json.loads(self.params.replace("'",'"'))
-        if len(_path) == 6 and len(p_dict.keys()) > 0:
+        if len(_path) == 5 and len(p_dict.keys()) > 0:
             params = self.__get_parameters(p_dict)
             connections = self.__get_connections(p_dict)
             variables = self.__get_variables(p_dict)
