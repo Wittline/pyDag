@@ -1,5 +1,5 @@
 from google.cloud import bigquery
-from bqerror import BQError
+from gcp.bqerror import BQError
 import configparser
 
 class BQClient:
@@ -9,12 +9,12 @@ class BQClient:
 
     def __get_client_service_account(self):
         config = configparser.ConfigParser()
-        config.read_file(open('config/config.cfg'))
+        config.read_file(open('gcp/config/config.cfg'))
         return bigquery.Client.from_service_account_json(
             config.get('GCP','service-account'))
 
     def run_script(self, script):
-        
+                
         client = self.__get_client_service_account()
         query_job = client.query(script)
         if query_job.errors:
