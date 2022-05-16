@@ -1,9 +1,9 @@
 script_extract_from_stg = """
-insert into '{project}.{dataset}.{tabledestination}'
+insert into {project}.{dataset}.{tabledestination}
 (id, category, lastdate)
 select id, category, lastdate
-from '{project}.{dataset}.{tablesource}'
-WHERE EXTRACT(YEAR FROM lastdate) = {year} and category = {category}
+from {project}.{dataset}.{tablesource}
+WHERE EXTRACT(YEAR FROM lastdate) = {year} and category = '{category}'
 """
 
 
@@ -11,7 +11,7 @@ class extract_from_stg:
 
     def __init__(self):               
         self.scripts = { 
-            'extract_from_stg_1': script_extract_from_stg,      
+            'extract_from_stg': script_extract_from_stg,      
             }
     
     def get_script(self, scr_id, params):        

@@ -14,7 +14,6 @@ class BQClient:
             config.get('GCP','service-account'))
 
     def run_script(self, script):
-                
         client = self.__get_client_service_account()
         query_job = client.query(script)
         if query_job.errors:

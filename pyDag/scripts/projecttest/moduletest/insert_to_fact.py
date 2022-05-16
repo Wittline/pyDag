@@ -1,11 +1,11 @@
 script_insert_to_fact =  """
-insert into '{project}.{dataset}.{tablefinal}'
+insert into {project}.{dataset}.{tablefinal}
 (id, category, lastdate)
 select id, category, lastdate
-from '{project}.{dataset}.{table1}'
+from {project}.{dataset}.{table1}
 union all
 select id, category, lastdate
-from '{project}.{dataset}.{table2}'
+from {project}.{dataset}.{table2}
 """
 
 class insert_to_fact:
