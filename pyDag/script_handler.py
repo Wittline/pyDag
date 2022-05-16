@@ -2,7 +2,7 @@ from enum import Enum
 import importlib
 import json
 from enums import TypeScript, TypeEngine, TypeStorage
-from scripts.projecttest.moduletest.create_table_stg import create_table_stg
+
 
 class ScriptHandler:
 
@@ -38,10 +38,10 @@ class ScriptHandler:
         return {k: v for k, v in p_dict.items()
             if k[0] != '*'}                            
 
-    def __get_script(self, _path, params):
-
+    def __get_script(self, _path, params):        
+        
         typestorage = TypeStorage[_path[0]]
-                
+                        
         if typestorage == TypeStorage.local:
             return self.__get_local_scripts(_path[1:], params)
         else:
@@ -49,14 +49,13 @@ class ScriptHandler:
 
 
     def format_script(self):
-        _path = self.script.split('.')        
-        p_dict  = json.loads(self.params.replace("'",'"'))
-        if len(_path) == 5 and len(p_dict.keys()) > 0:
-            params = self.__get_parameters(p_dict)
-            connections = self.__get_connections(p_dict)
-            variables = self.__get_variables(p_dict)
-            return self.__get_script(_path, params)
-        else:
-            raise Exception("Path incomplete for script {0} in task id {1}".format(self.script, self.id))
+        _path = self.script.split('.')
+        p_dict = {}
+        if len(self.params) > 0:
+            p_dict  = json.loads(self.params.replace("'",'"'))        
+        params = self.__get_parameters(p_dict)
+        connections = self.__get_connections(p_dict)
+        variables = self.__get_variables(p_dict)
+        return self.__get_script(_path, params)
 
     

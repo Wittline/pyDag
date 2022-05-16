@@ -1,5 +1,5 @@
 script_create_table_stg = """
-CREATE OR REPLACE TABLE '{project}.{dataset}.{table}'
+CREATE OR REPLACE TABLE {project}.{dataset}.{table}
 (
     {columns}    
 )
