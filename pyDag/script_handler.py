@@ -2,29 +2,30 @@ from enum import Enum
 import importlib
 import json
 from enums import TypeScript, TypeEngine, TypeStorage
+from scripts.projecttest.moduletest.create_table_stg import create_table_stg
 
 class ScriptHandler:
 
-    def __init__(self, id,  script, params):
-        self.id = id
-        self.script = script
+    def __init__(self, id,  params, script):
+        self.id = id        
         self.params = params
+        self.script = script
 
     def __get_local_scripts(self, _path, params):
-
+                
         typeengine =  TypeEngine[_path[-2]]
-        scriptname = _path[-1]
-        _path.remove(typeengine)                        
-        mod = importlib.import_module("scripts." + '.'.join(_path[1:-1]), ".")
+        scriptname = _path[-1]        
+        _path.remove(typeengine.name)        
+        mod = importlib.import_module("scripts." + '.'.join(_path), ".")
         cls = getattr(mod, scriptname)
-        return cls.get_script(scriptname, params), typeengine
+        script = cls().get_script(scriptname, params)        
+        return script, typeengine
 
     def __get_gcs_scripts(self, scr, name, params):
         pass
 
     def __get_s3_scripts(self, scr, name, params):
         pass
-
 
     def __get_connections(self, p_dict):
         return {k: v for k, v in p_dict.items() if k[0:2] == '**'}
@@ -42,13 +43,13 @@ class ScriptHandler:
         typestorage = TypeStorage[_path[0]]
                 
         if typestorage == TypeStorage.local:
-            return self.__get_local_scripts(_path, params)
+            return self.__get_local_scripts(_path[1:], params)
         else:
             raise Exception("Location script not found: {0}".format(_path))
 
 
     def format_script(self):
-        _path = self.script.split('.')
+        _path = self.script.split('.')        
         p_dict  = json.loads(self.params.replace("'",'"'))
         if len(_path) == 5 and len(p_dict.keys()) > 0:
             params = self.__get_parameters(p_dict)
