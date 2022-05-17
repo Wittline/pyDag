@@ -9,7 +9,7 @@ class BQClient:
 
     def __get_client_service_account(self):
         config = configparser.ConfigParser()
-        config.read_file(open('gcp/config/config.cfg'))
+        config.read_file(open('config/config.cfg'))
         return bigquery.Client.from_service_account_json(
             config.get('GCP','service-account'))
 

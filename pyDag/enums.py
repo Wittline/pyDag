@@ -15,13 +15,9 @@ class TaskState(Enum):
     failed = 5
     restarting = 6
 
-class TypeScript(Enum):
-    pyScripts  = 0
-    sqlScripts = 1
-
 class TypeEngine(Enum):
-    bq  = 0
-    spark = 1
+    bq  = '.sql'
+    spark = '.py'
 
 class TypeStorage(Enum):
     local = 0
