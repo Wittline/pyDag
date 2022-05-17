@@ -3,7 +3,6 @@ from gcp.bqerror import BQError
 import configparser
 
 class BQClient:
-
     def __init__(self):
         pass
 

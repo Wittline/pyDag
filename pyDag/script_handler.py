@@ -8,7 +8,6 @@ import configparser
 from google.cloud import storage, exceptions
 import os
 
-
 class ScriptHandler:
 
     def __init__(self, id,  params, script):

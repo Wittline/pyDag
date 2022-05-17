@@ -2,7 +2,6 @@ from multiprocessing.pool import ThreadPool as Pool
 from error import ExecutionError
 
 class ParallelProcessor:
-
     def __init__(self, cpus):   
         self.cpus = cpus
         self.pool = None        
