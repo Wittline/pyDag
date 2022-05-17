@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class DagState(Enum):
     none = 0
     running = 1

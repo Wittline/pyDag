@@ -3,7 +3,6 @@ from engine_handler import EngineHandler
 from error import *
 
 class Engine(ScriptHandler, EngineHandler):
-
     def __init__(self, id, params, script):
         self.id = id
         self.params = params

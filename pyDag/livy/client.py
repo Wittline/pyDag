@@ -4,7 +4,6 @@ from sparksession import SparkSession
 from sparksessionerror import SparkSessionError
 import configparser
 
-
 class LivyClient:
 
     def __init__(self, id):

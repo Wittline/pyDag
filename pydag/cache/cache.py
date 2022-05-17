@@ -23,6 +23,7 @@ class Cache:
             return None
 
     def delete(k):
+        
         r = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
         r.delete(k)
 
