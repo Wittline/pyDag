@@ -10,16 +10,15 @@ import os
 
 class ScriptHandler:
 
-    def __init__(self, id,  params, script, dag):
+    def __init__(self, id,  params, script, dag_data):
         self.id = id        
         self.params = params
         self.script = script
-        self.dag = dag
+        self.dag_data = dag_data
 
     def __get_gcs_scripts(self, _path):
 
         engine =  TypeEngine[_path[2]]
-
         try:
             config = configparser.ConfigParser()
             config.read_file(open(os.getcwd() + '/config/config.cfg'))
@@ -30,8 +29,7 @@ class ScriptHandler:
             script = blob.download_as_string().decode()
             return script
         except exceptions.GoogleCloudError as ex:
-            raise
-        
+            raise                
 
     def __get_connections(self, p_dict):
         return {k: v for k, v in p_dict.items() if k[0:2] == '**'}
@@ -48,7 +46,7 @@ class ScriptHandler:
 
         script = None
         engine = TypeEngine[_path[-2]]
-        key = '{}.{}.{}.{}.{}.{}'.format(self.dag['dag_id'], self.id, *_path[1:])
+        key = '{}.{}.{}.{}.{}.{}'.format(self.dag_data['dag_id'], self.id, *_path[1:])
 
         if self.dag['script_cache']:
             script  = Cache.get(key)            
