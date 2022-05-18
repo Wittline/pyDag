@@ -3,11 +3,11 @@ from engine_handler import EngineHandler
 from error import *
 
 class Engine(ScriptHandler, EngineHandler):
-    def __init__(self, id, params, script):
+    def __init__(self, id, params, script, dag):
         self.id = id
         self.params = params
         self.script = script
-        ScriptHandler.__init__(self, id, params, script)
+        ScriptHandler.__init__(self, id, params, script, dag)
         EngineHandler.__init__(self, id)
     
     def run(self):

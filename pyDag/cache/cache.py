@@ -3,17 +3,26 @@ import redis
 
 class Cache:
 
-    def set(k,v):
+    def set(k,v, e):
         try:
-            r = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)            
+            r = redis.StrictRedis(
+                host='localhost', 
+                port=6379, 
+                decode_responses=True)
+
             r.set(k,v)
-            r.expire(k,3600)
+            if e > 0:
+                r.expire(k,e)           
         except Exception as ex:
             print(str(ex))
 
     def get(k):
         try:        
-            r = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+            r = redis.StrictRedis(
+                host='localhost', 
+                port=6379, 
+                decode_responses=True)
+
             if r.exists(k) < 0:
                 return None
             else:
@@ -23,9 +32,16 @@ class Cache:
             return None
 
     def delete(k):
-        
-        r = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
-        r.delete(k)
+        try:
+            r = redis.StrictRedis(
+                host='localhost', 
+                port=6379, 
+                decode_responses=True)
+
+            if not r.exists(k) < 0:
+                r.delete(k)
+        except Exception as ex:
+            print(str(ex))        
 
         
 
