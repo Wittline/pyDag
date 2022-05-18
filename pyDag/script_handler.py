@@ -48,15 +48,15 @@ class ScriptHandler:
         engine = TypeEngine[_path[-2]]
         key = '{}.{}.{}.{}.{}.{}'.format(self.dag_data['dag_id'], self.id, *_path[1:])
 
-        if self.dag['script_cache']:
+        if self.dag_data['script_cache']:
             script  = Cache.get(key)            
 
         if script is not None:     
             return script.format(**params), engine
         else:
             script = self.__get_gcs_scripts(_path[1:])
-            if self.dag['script_cache']:
-                Cache.set(key, script, self.dag['expire_cache'])                
+            if self.dag_data['script_cache']:
+                Cache.set(key, script, self.dag_data['expire_cache'])                
             return script.format(**params), engine
 
     def format_script(self):
