@@ -1,0 +1,2 @@
+class DPError(Exception):
+    pass
