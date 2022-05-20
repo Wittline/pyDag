@@ -7,6 +7,7 @@ import configparser
 from spark.dperror import DPError
 import argparse
 import re
+import time
 
 
 class DPClient:
@@ -16,8 +17,9 @@ class DPClient:
         self.region = None
         self.cluster_name = None
         self.bucket = None
-        self.script_name = None
-        self.__credentials = None
+        self.folder = None
+        self.script = None
+        self.__credentials = None        
     
 
     def __get_gredentials(self):
@@ -67,7 +69,7 @@ class DPClient:
             "cluster_name": self.cluster_name,
             "config": {
                 "master_config": {"num_instances": 1, "machine_type_uri": "n1-standard-2"},
-                "worker_config": {"num_instances": 2, "machine_type_uri": "n1-standard-2"},
+                "worker_config": {"num_instances": 1, "machine_type_uri": "n1-standard-2"},
             },
         }
 
@@ -77,8 +79,11 @@ class DPClient:
         )
 
         result = operation.result()
+        print(operation.result)
       
         print(f"Cluster created successfully: {result.cluster_name}")
+
+        return True
 
                                     
     def __delete_cluster(self):
@@ -97,14 +102,16 @@ class DPClient:
         print("Cluster {} successfully deleted.".format(self.cluster_name))
 
 
-    def __submit_job(self):
+    def __submit_job(self, params):
 
         client = self.__get_client('job')
         
         job = {
             "placement": {"cluster_name": self.cluster_name},          
-            "pyspark_job": {"main_python_file_uri": "gs://{}/{}".format(self.bucket, self.script_name)},
-        }
+            "pyspark_job": {"main_python_file_uri": "gs://{}/{}/{}".format(self.bucket, self.folder, self.script),  
+                   "args": [params],
+                },            
+            }
 
         operation = client.submit_job_as_operation(
             request={"project_id": self.project_id, "region": self.region, "job": job}
@@ -112,23 +119,42 @@ class DPClient:
 
         response = operation.result()
 
-        matches = re.match("gs://(.*?)/(.*)", response.driver_output_resource_uri)
+        print(response.driver_output_resource_uri)
+
+        matches = re.match("gs://(.*?)/(.*)/(.*)", response.driver_output_resource_uri)
 
         output = (
             storage.Client()
             .get_bucket(matches.group(1))
-            .blob(f"{matches.group(2)}.000000000")
+            .blob(f"{matches.group(2)}/{matches.group(3)}.000000000")
             .download_as_string()
         )
 
         print(f"Job finished successfully: {output}")
+        return output
 
+        
 
-    def run_script(self, script):
+    def run_script(self, script, params):
 
-        client = self.__get_client_service_account()
-        query_job = client.query(script)
-        if script_job.errors:
-            raise DPError('Error processing pyspark script: {0}'.format(query_job.errors))
+        data = script.split('.')        
+        self.bucket = data[0]
+        self.folder = data[1]
+        self.script = data[2]
 
-        return True    
+        config = configparser.ConfigParser()
+        config.read_file(open('config/config.cfg'))
+        self.project_id = config.get('GCP','project')
+        self.region = config.get('GCP','region')
+        self.cluster_name = 'pydag-cluster-dataproc-{}'.format(time.time_ns())
+
+        if self.__create_cluster():
+            self.__submit_job(params)
+            self.__delete_cluster()
+        else:
+            raise DPError('Issues creating cluster : {0}'.format(self.cluster_name))
+
+    
+        return True
+
+       
