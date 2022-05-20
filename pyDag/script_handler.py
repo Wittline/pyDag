@@ -40,7 +40,7 @@ class ScriptHandler:
 
     def __get_parameters(self, p_dict):
         return {k: v for k, v in p_dict.items()
-            if k[0] != '*'}                            
+            if k[0] != '*'}
 
     def __get_script(self, _path, params):
 
@@ -49,23 +49,21 @@ class ScriptHandler:
         key = '{}.{}.{}.{}.{}.{}'.format(self.dag_data['dag_id'], self.id, *_path[1:])
 
         if self.dag_data['script_cache']:
-            script  = Cache.get(key)            
+            script  = Cache.get(key)           
 
         if script is not None:     
-            return script.format(**params), engine
+            return script, engine, params
         else:
             script = self.__get_gcs_scripts(_path[1:])
             if self.dag_data['script_cache']:
-                Cache.set(key, script, self.dag_data['expire_cache'])                
-            return script.format(**params), engine
+                Cache.set(key, script, self.dag_data['expire_cache'])
+            return script, engine, params
 
     def format_script(self):
 
         _path = self.script.split('.')
         p_dict = {}
         if len(self.params) > 0:
-            p_dict  = json.loads(self.params.replace("'",'"'))        
+            p_dict  = json.loads(self.params.replace("'",'"'))
         params = self.__get_parameters(p_dict)
-        connections = self.__get_connections(p_dict)
-        variables = self.__get_variables(p_dict)
         return self.__get_script(_path, params)
