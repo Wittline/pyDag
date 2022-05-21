@@ -132,12 +132,11 @@ class DPClient:
 
         print(f"Job finished successfully: {output}")
         return output
-
         
 
     def run_script(self, script, params):
 
-        data = script.split('.')        
+        data = script.split('.')
         self.bucket = data[0]
         self.folder = data[1]
         self.script = data[2]
