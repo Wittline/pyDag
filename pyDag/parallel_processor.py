@@ -11,7 +11,7 @@ class ParallelProcessor:
         item = (task, func(task))
 
         if isinstance(item[1], Exception):
-            raise ExecutionError('Vertex "{0}" execution error: {1}'.format(item[0], item[1]))
+            raise ExecutionError('Task "{0}" execution error: {1}'.format(item[0], item[1]))
 
         return item
         

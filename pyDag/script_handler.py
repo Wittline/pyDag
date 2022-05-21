@@ -29,7 +29,16 @@ class ScriptHandler:
             script = blob.download_as_string().decode()
             return script
         except exceptions.GoogleCloudError as ex:
-            raise                
+            raise
+
+
+    def __add_to_json_dict(self, params_dict):
+        config = configparser.ConfigParser()
+        config.read_file(open(os.getcwd() + '/config/config.cfg'))
+        spark_config = config.get('SPARK-CONFIG','spark.jars.packages')
+        params_dict['spark.jars.packages'] = spark_config
+        params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id        
+        return json.dumps(params_dict)
 
     def __get_connections(self, p_dict):
         return {k: v for k, v in p_dict.items() if k[0:2] == '**'}
@@ -42,14 +51,13 @@ class ScriptHandler:
         return {k: v for k, v in p_dict.items()
             if k[0] != '*'}
 
-    def __get_script(self, _path, params):
+    def __get_script(self, _path, engine, params):
 
-        script = None
-        engine = TypeEngine[_path[-2]]
+        script = None        
         key = '{}.{}.{}.{}.{}.{}'.format(self.dag_data['dag_id'], self.id, *_path[1:])
 
         if self.dag_data['script_cache']:
-            script  = Cache.get(key)           
+            script  = Cache.get(key)
 
         if script is not None:     
             return script, engine, params
@@ -59,11 +67,17 @@ class ScriptHandler:
                 Cache.set(key, script, self.dag_data['expire_cache'])
             return script, engine, params
 
-    def format_script(self):
+    def format_script(self, engine):
 
         _path = self.script.split('.')
-        p_dict = {}
+        _engine = TypeEngine[_path[-2]]
+        params_dict = {}        
+
         if len(self.params) > 0:
-            p_dict  = json.loads(self.params.replace("'",'"'))
-        params = self.__get_parameters(p_dict)
-        return self.__get_script(_path, params)
+            params_dict  = json.loads(json.dumps(self.params))
+            params_dict = self.__get_parameters(params_dict)
+        
+        if _engine  == TypeEngine.spark:
+            return _path, _engine, self.__add_to_json_dict(params_dict)
+        else:
+            return self.__get_script(_path, _engine, params_dict)
