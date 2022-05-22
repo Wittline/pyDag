@@ -11,5 +11,5 @@ class Engine(ScriptHandler, EngineHandler):
         EngineHandler.__init__(self, id)
     
     def run(self):        
-        script, typeengine, params = self.format_script()        
+        script, typeengine, params = self.format_script()  
         self.run_script(script, typeengine, params)

@@ -28,26 +28,25 @@ class DPClient:
             return self.__credentials
         else:
             config = configparser.ConfigParser()
-            config.read_file(open('config/config.cfg'))
-            json_account = json.loads(config.get('GCP','service-account'))
-            self.__credentials = service_account.Credentials.from_service_account_info(
-                json_account)
+            config.read_file(open('config/config.cfg'))                                            
+            self.__credentials = service_account.Credentials.from_service_account_file(
+                config.get('GCP','service-account'))
             
         return self.__credentials
 
     
-    def __get_client(self, client):
+    def __get_client(self, typeclient):
 
         client_options={"api_endpoint": "{}-dataproc.googleapis.com:443".format(self.region)}
         credentials = self.__get_gredentials()
         client = None
 
-        if client == 'cluster':
+        if typeclient == 'cluster':
             client = dataproc.ClusterControllerClient(
                 client_options=client_options,
                 credentials = credentials
             )
-        elif client == 'job':
+        elif typeclient == 'job':
             client = dataproc.JobControllerClient(
                 client_options = client_options,
                 credentials = credentials
@@ -68,8 +67,8 @@ class DPClient:
             "project_id": self.project_id,
             "cluster_name": self.cluster_name,
             "config": {
-                "master_config": {"num_instances": 1, "machine_type_uri": "n1-standard-2"},
-                "worker_config": {"num_instances": 1, "machine_type_uri": "n1-standard-2"},
+                "master_config": {"num_instances": 1, "machine_type_uri": "custom-1-4096", "disk_config":{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}},
+                "worker_config": {"num_instances": 2, "machine_type_uri": "custom-1-4096", "disk_config":{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}},          
             },
         }
 
@@ -108,8 +107,8 @@ class DPClient:
         
         job = {
             "placement": {"cluster_name": self.cluster_name},          
-            "pyspark_job": {"main_python_file_uri": "gs://{}/{}/{}".format(self.bucket, self.folder, self.script),  
-                   "args": [params],
+            "pyspark_job": {"main_python_file_uri": "gs://{}/{}/{}".format(self.bucket, self.folder, self.script + '.py'),
+                   "args": ['--params', params],
                 },            
             }
 
@@ -117,16 +116,18 @@ class DPClient:
             request={"project_id": self.project_id, "region": self.region, "job": job}
         )
 
+
+        print(dir(operation))
         response = operation.result()
 
-        print(response.driver_output_resource_uri)
+        print("ERROR::::", response.driver_output_resource_uri)
 
-        matches = re.match("gs://(.*?)/(.*)/(.*)", response.driver_output_resource_uri)
+        matches = re.match("gs://(.*?)/(.*)", response.driver_output_resource_uri)
 
         output = (
             storage.Client()
             .get_bucket(matches.group(1))
-            .blob(f"{matches.group(2)}/{matches.group(3)}.000000000")
+            .blob(f"{matches.group(2)}.000000000")
             .download_as_string()
         )
 
@@ -135,11 +136,10 @@ class DPClient:
         
 
     def run_script(self, script, params):
-
-        data = script.split('.')
-        self.bucket = data[0]
-        self.folder = data[1]
-        self.script = data[2]
+        
+        self.bucket = script[0]
+        self.folder = script[1]
+        self.script = script[3]
 
         config = configparser.ConfigParser()
         config.read_file(open('config/config.cfg'))

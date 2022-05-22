@@ -1,12 +1,14 @@
 from enum import Enum
 import importlib
 import json
+from mimetypes import types_map
 from unicodedata import name
-from enums import TypeEngine
+from enums import TypeEngine, TypeStorage
 from cache.cache import Cache
 import configparser
 from google.cloud import storage, exceptions
 import os
+
 
 class ScriptHandler:
 
@@ -37,8 +39,8 @@ class ScriptHandler:
         config.read_file(open(os.getcwd() + '/config/config.cfg'))
         spark_config = config.get('SPARK-CONFIG','spark.jars.packages')
         params_dict['spark.jars.packages'] = spark_config
-        params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id        
-        return json.dumps(params_dict)
+        params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id             
+        return str(json.dumps(params_dict))
 
     def __get_connections(self, p_dict):
         return {k: v for k, v in p_dict.items() if k[0:2] == '**'}
@@ -53,7 +55,8 @@ class ScriptHandler:
 
     def __get_script(self, _path, engine, params):
 
-        script = None        
+        script = None
+        storage = TypeStorage[_path[0]]
         key = '{}.{}.{}.{}.{}.{}'.format(self.dag_data['dag_id'], self.id, *_path[1:])
 
         if self.dag_data['script_cache']:
@@ -67,17 +70,17 @@ class ScriptHandler:
                 Cache.set(key, script, self.dag_data['expire_cache'])
             return script, engine, params
 
-    def format_script(self, engine):
+    def format_script(self):
 
         _path = self.script.split('.')
         _engine = TypeEngine[_path[-2]]
         params_dict = {}        
 
         if len(self.params) > 0:
-            params_dict  = json.loads(json.dumps(self.params))
+            params_dict  = json.loads(self.params.replace("'",'"'))
             params_dict = self.__get_parameters(params_dict)
         
         if _engine  == TypeEngine.spark:
-            return _path, _engine, self.__add_to_json_dict(params_dict)
+            return _path[1:], _engine, self.__add_to_json_dict(params_dict)
         else:
             return self.__get_script(_path, _engine, params_dict)
