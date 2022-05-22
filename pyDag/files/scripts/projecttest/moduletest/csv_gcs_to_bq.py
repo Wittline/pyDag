@@ -13,12 +13,11 @@ class SparkTask:
     
         spark = SparkSession\
             .builder\
-            .appName(self.params['description'])\
-            .config('spark.jars.packages', self.params['spark.jars.packages']) \
+            .appName(self.params['id'])\
+            .config('spark.jars.packages', self.params['spark.jars.packages'])\
             .getOrCreate()
 
         return  spark
-
     
     def execute_task(self, spark):        
 
@@ -26,7 +25,7 @@ class SparkTask:
             .read\
             .option("inferSchema","true")\
             .option("header","true")\
-            .csv("gs://{bucket}/{folder}/{file_name}.csv".format(
+            .csv("gs://{}/{}/{}".format(
                 self.params['bucket'],
                 self.params['folder'], 
                 self.params['file_name']))

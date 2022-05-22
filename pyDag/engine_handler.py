@@ -2,7 +2,7 @@ import configparser
 import importlib
 
 class EngineHandler:
-    def __init__(self, id, params):
+    def __init__(self, id):
         self.id = id
 
     def __get_engine_config(self, typeEngine):
