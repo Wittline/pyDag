@@ -1,5 +1,4 @@
 import argparse
-from sqlite3 import paramstyle
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 import json
@@ -13,32 +12,33 @@ class SparkTask:
     
         spark = SparkSession\
             .builder\
+            .master('yarn')\
             .appName(self.params['id'])\
-            .config('spark.jars.packages', self.params['spark.jars.packages'])\
             .getOrCreate()
 
         return  spark
     
-    def execute_task(self, spark):        
+    def execute_task(self, spark):
 
-        df = spark\
-            .read\
-            .option("inferSchema","true")\
-            .option("header","true")\
-            .csv("gs://{}/{}/{}".format(
-                self.params['bucket'],
-                self.params['folder'], 
-                self.params['file_name']))
+            df = spark\
+                .read\
+                .option("inferSchema","true")\
+                .option("header","true")\
+                .csv("gs://{}/{}/{}".format(
+                    self.params['bucket'],
+                    self.params['folder'], 
+                    self.params['file_name']))
 
-        df = df.withColumnRenamed("col1","id")\
-            .withColumnRenamed("col2","category")\
-            .withColumnRenamed("col3","lastdate")
-        
-        df.write.format("bigquery")\
-            .option("table","{}.{}".format(self.params['dataset'], self.params['destination_table'])).mode('overwrite').save()
+            df = df.withColumnRenamed("col1","id")\
+                .withColumnRenamed("col2","category")\
+                .withColumnRenamed("col3","lastdate")        
 
-        print(self.params['id'] + " Ready")        
-        return True
+            
+            df.write.format('bigquery') \
+                .option('table', '{}.{}'.format(self.params['dataset'], self.params['destination_table'])) \
+                .save()
+
+            return True
 
 
 if __name__ == '__main__':
@@ -51,7 +51,12 @@ if __name__ == '__main__':
 
     st = SparkTask(params)
     spark = st.create_spark_session()
-    st.execute_task(spark)
+
+    spark.conf.set('temporaryGcsBucket', params['temporaryGcsBucket'])
+
+    if st.execute_task(spark):
+        print(params['id'] + " --> Ready")
+
     spark.stop()
 
     
