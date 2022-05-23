@@ -1,5 +1,5 @@
 from google.cloud import bigquery
-from gcp.bqerror import BQError
+from engines.gcp.bqerror import BQError
 import configparser
 
 class BQClient:
