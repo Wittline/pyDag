@@ -40,7 +40,7 @@ class ScriptHandler:
         spark_config = dict(config.items('SPARK-CONFIG'))
         for k, v in spark_config.items():
             params_dict[k] = v        
-        params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id             
+        params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id       
         return str(json.dumps(params_dict))
 
     def __get_connections(self, p_dict):
