@@ -36,6 +36,7 @@ class SparkTask:
             
             df.write.format('bigquery') \
                 .option('table', '{}.{}'.format(self.params['dataset'], self.params['destination_table'])) \
+                .mode("overwrite") \
                 .save()
 
             return True

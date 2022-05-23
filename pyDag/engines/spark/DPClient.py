@@ -56,51 +56,7 @@ class DPClient:
             client = storage.Client.from_service_account_json(service_account)
         else:
             pass
-        return client        
-
-
-    def __create_cluster(self):
-
-
-        client = self.__get_client('cluster')
-
-      
-        cluster = {
-            "project_id": self.gcp_data['project'],
-            "cluster_name": self.gcp_data['dataproc-cluster-name'],
-            "config": {
-                "master_config": {"num_instances": 1, "machine_type_uri": "custom-1-4096", "disk_config":{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}},
-                "worker_config": {"num_instances": 2, "machine_type_uri": "custom-1-4096", "disk_config":{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}},
-                "software_config": { "image_version": "1.5-debian10"}
-            },
-        }
-
-
-        operation = client.create_cluster(
-            request={"project_id": self.gcp_data['project'], "region": self.gcp_data['region'], "cluster": cluster }
-        )
-
-        result = operation.result()        
-      
-        print(f"Cluster created successfully: {result.cluster_name}")
-
-        return True
-
-                                    
-    def __delete_cluster(self):
-
-        client = self.__get_client('cluster')
-
-        operation = client.delete_cluster(
-            request={
-                "project_id": self.gcp_data['project'],
-                "region": self.gcp_data['region'],
-                "cluster_name": self.gcp_data['dataproc-cluster-name'],
-            }
-        )
-        operation.result()
-
-        print("Cluster {} successfully deleted.".format(self.gcp_data['dataproc-cluster-name']))
+        return client
 
     
     def __get_bucket_output(self, strerror):
