@@ -1,3 +1,4 @@
+from decimal import DecimalException
 import sys
 import json
 from google.oauth2 import service_account
@@ -68,13 +69,14 @@ class DPClient:
             "cluster_name": self.cluster_name,
             "config": {
                 "master_config": {"num_instances": 1, "machine_type_uri": "custom-1-4096", "disk_config":{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}},
-                "worker_config": {"num_instances": 2, "machine_type_uri": "custom-1-4096", "disk_config":{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}},          
+                "worker_config": {"num_instances": 2, "machine_type_uri": "custom-1-4096", "disk_config":{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}},
+                "software_config": { "image_version": "1.5-debian10"}
             },
         }
 
 
         operation = client.create_cluster(
-            request={"project_id": self.project_id, "region": self.region, "cluster": cluster}
+            request={"project_id": self.project_id, "region": self.region, "cluster": cluster }
         )
 
         result = operation.result()
@@ -100,43 +102,59 @@ class DPClient:
 
         print("Cluster {} successfully deleted.".format(self.cluster_name))
 
+    
+    def __get_url_bucket_output(self, strerror):
+        pass
+
+
+    def __get_output_from_bucket(self, url):
+        
+        matches = re.match("gs://(.*?)/(.*)", url)
+        
+        output = (
+                    storage.Client()
+                    .get_bucket(matches.group(1))
+                    .blob(f"{matches.group(2)}.000000000")
+                    .download_as_string()
+                )
+        return output
+
 
     def __submit_job(self, params):
 
         client = self.__get_client('job')
         
         job = {
-            "placement": {"cluster_name": self.cluster_name},          
+            "placement": {"cluster_name": 'pydag-cluster-dataproc-1653251777657359700'},          
             "pyspark_job": {"main_python_file_uri": "gs://{}/{}/{}".format(self.bucket, self.folder, self.script + '.py'),
                    "args": ['--params', params],
+                   "jar_file_uris": ['gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar'],
                 },            
             }
 
-        operation = client.submit_job_as_operation(
-            request={"project_id": self.project_id, "region": self.region, "job": job}
-        )
+        try:
 
+            operation = client.submit_job_as_operation(
+                request={"project_id": self.project_id, "region": self.region, "job": job}
+            )
 
-        print(dir(operation))
-        response = operation.result()
+            response = operation.result()        
 
-        print("ERROR::::", response.driver_output_resource_uri)
+            if response.status.state.value == 5:
 
-        matches = re.match("gs://(.*?)/(.*)", response.driver_output_resource_uri)
+                output = self.__get_output_from_bucket(response.driver_output_resource_uri)
 
-        output = (
-            storage.Client()
-            .get_bucket(matches.group(1))
-            .blob(f"{matches.group(2)}.000000000")
-            .download_as_string()
-        )
+                print(f"Script { self.script} finished successfully: {output}")
 
-        print(f"Job finished successfully: {output}")
-        return output
+                return True
+
+        except Exception as ex:
+            url = self.__get_url_bucket_output(str(ex))
+            output = self.__get_output_from_bucket(url)
+            raise DPError('Error processing script: {0}:{1}'.format(self.script, output))     
         
 
     def run_script(self, script, params):
-        
         self.bucket = script[0]
         self.folder = script[1]
         self.script = script[3]
@@ -147,13 +165,13 @@ class DPClient:
         self.region = config.get('GCP','region')
         self.cluster_name = 'pydag-cluster-dataproc-{}'.format(time.time_ns())
 
-        if self.__create_cluster():
-            self.__submit_job(params)
-            self.__delete_cluster()
-        else:
-            raise DPError('Issues creating cluster : {0}'.format(self.cluster_name))
+        # if self.__create_cluster():
+        result = self.__submit_job(params)
+        #     self.__delete_cluster()
+        # else:
+        #     raise DPError('Issues creating cluster : {0}'.format(self.cluster_name))
 
     
-        return True
+        return result
 
        
