@@ -37,8 +37,8 @@ class ScriptHandler:
     def __add_to_json_dict(self, params_dict):
         config = configparser.ConfigParser()
         config.read_file(open(os.getcwd() + '/config/config.cfg'))
-        spark_config = config.get('SPARK-CONFIG','spark.jars.packages')
-        params_dict['spark.jars.packages'] = spark_config
+        spark_config = config.get('SPARK-CONFIG','temporaryGcsBucket')
+        params_dict['temporaryGcsBucket'] = spark_config
         params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id             
         return str(json.dumps(params_dict))
 
