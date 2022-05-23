@@ -1,14 +1,10 @@
-from decimal import DecimalException
-import sys
 import json
 from google.oauth2 import service_account
 from google.cloud import dataproc_v1 as dataproc
 from google.cloud import storage
 import configparser
-from spark.dperror import DPError
-import argparse
+from engines.spark.dperror import DPError
 import re
-import time
 import os
 
 
@@ -108,6 +104,7 @@ class DPClient:
 
     
     def __get_bucket_output(self, strerror):
+
         result = re.search('gs://(.*)driveroutput', strerror)
         return 'gs://{0}driveroutput'.format(result.group(1))
 
@@ -165,9 +162,7 @@ class DPClient:
         self.bucket = script[0]
         self.folder = script[1]
         self.script = script[3]
-
          
-
         config = configparser.ConfigParser()
         config.read_file(open('config/config.cfg'))
 
@@ -177,15 +172,11 @@ class DPClient:
         
         self.params = params
         jars = json.loads(params)['spark.jars'].split(',')
+
         for jar in jars:
             self.jars.append(jar)
-
-        # if self.__create_cluster():
+        
         result = self.__submit_job()
-        #     self.__delete_cluster()
-        # else:
-        #     raise DPError('Issues creating cluster : {0}'.format(self.cluster_name))
-
     
         return result
 
