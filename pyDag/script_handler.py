@@ -34,11 +34,12 @@ class ScriptHandler:
             raise
 
 
-    def __add_to_json_dict(self, params_dict):
+    def __add_spark_params(self, params_dict):
         config = configparser.ConfigParser()
         config.read_file(open(os.getcwd() + '/config/config.cfg'))
-        spark_config = config.get('SPARK-CONFIG','temporaryGcsBucket')
-        params_dict['temporaryGcsBucket'] = spark_config
+        spark_config = dict(config.items('SPARK-CONFIG'))
+        for k, v in spark_config.items():
+            params_dict[k] = v        
         params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id             
         return str(json.dumps(params_dict))
 
@@ -81,6 +82,6 @@ class ScriptHandler:
             params_dict = self.__get_parameters(params_dict)
         
         if _engine  == TypeEngine.spark:
-            return _path[1:], _engine, self.__add_to_json_dict(params_dict)
+            return _path[1:], _engine, self.__add_spark_params(params_dict)
         else:
             return self.__get_script(_path, _engine, params_dict)
