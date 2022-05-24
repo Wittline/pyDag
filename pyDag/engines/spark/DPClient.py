@@ -74,7 +74,13 @@ class DPClient:
                     .get_bucket(matches.group(1))
                     .blob(f"{matches.group(2)}.000000000")
                     .download_as_string()
-                )
+                ).decode()
+
+
+        lines = output.split("\n")
+        output = "\n".join([line for line in lines 
+                    if not 'INFO' in line])
+
         return output
 
 
@@ -87,7 +93,7 @@ class DPClient:
             "pyspark_job": {"main_python_file_uri": "gs://{}/{}/{}".format(self.bucket, self.folder, self.script + '.py'),
                    "args": ['--params', self.params],                   
                    "jar_file_uris": self.jars,
-                },            
+                },
             }
 
         try:
@@ -134,6 +140,4 @@ class DPClient:
         
         result = self.__submit_job()
     
-        return result
-
-       
+        return result       

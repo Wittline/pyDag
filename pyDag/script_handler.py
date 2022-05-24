@@ -39,7 +39,7 @@ class ScriptHandler:
         config.read_file(open(os.getcwd() + '/config/config.cfg'))
         spark_config = dict(config.items('SPARK-CONFIG'))
         for k, v in spark_config.items():
-            params_dict[k] = v        
+            params_dict[k] = v
         params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id       
         return str(json.dumps(params_dict))
 
