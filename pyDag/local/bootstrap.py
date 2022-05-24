@@ -4,6 +4,7 @@ from google.cloud import storage
 import configparser
 import argparse
 import os
+from pathlib import Path
 
 class Bootstrap:
 
@@ -16,11 +17,8 @@ class Bootstrap:
 
         if self.__credentials is not None:
             return self.__credentials
-        else:
-            config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + '/config/config.cfg'))                                            
-            self.__credentials = service_account.Credentials.from_service_account_file(
-                config.get('GCP','service-account'))
+        else:                                     
+            self.__credentials = service_account.Credentials.from_service_account_file(r'C:\Users\ramse\...\pyDag\pyDag\config\atomic-key-348412-0c7115c249fb.json')
             
         return self.__credentials
 
@@ -42,16 +40,13 @@ class Bootstrap:
                 credentials = credentials
             )
         elif typeclient == 'gcs':
-            config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + '/config/config.cfg'))
-            service_account = config.get('GCP','service-account')
-            client = storage.Client.from_service_account_json(service_account)
+            client = storage.Client.from_service_account_file(r'C:\Users\ramse\...\pyDag\pyDag\config\atomic-key-348412-0c7115c249fb.json')
         else:
             pass
         return client     
 
 
-    def __create_cluster(self):
+    def create_cluster(self):
 
             client = self.__get_client('cluster')
         
@@ -65,7 +60,6 @@ class Bootstrap:
                 },
             }
 
-
             operation = client.create_cluster(
                 request={"project_id": self.gcp_data['project'], "region": self.gcp_data['region'], "cluster": cluster }
             )
@@ -77,7 +71,7 @@ class Bootstrap:
             return True
 
                                     
-    def __delete_cluster(self):
+    def delete_cluster(self):
 
             client = self.__get_client('cluster')
 
@@ -93,7 +87,7 @@ class Bootstrap:
             print("Cluster {} successfully deleted.".format(self.gcp_data['dataproc-cluster-name']))
 
 
-    def __stop_cluster(self):
+    def stop_cluster(self):
         pass
 
 
@@ -124,11 +118,11 @@ if __name__ == '__main__':
                 bootstrap = Bootstrap(gcp_data)
 
                 if args.Action == 'create_cluster':
-                    bootstrap.__create_cluster()
+                    bootstrap.create_cluster()
                 elif args.Action == 'delete_cluster':
-                    bootstrap.__delete_cluster()
+                    bootstrap.delete_cluster()
                 elif args.Action == 'stop_cluster':
-                    bootstrap.__stop_cluster()          
+                    bootstrap.stop_cluster()       
                 else:
                     print("Action {} is invalid".format(args.Action))
             else:

@@ -53,7 +53,7 @@ if __name__ == '__main__':
     st = SparkTask(params)
     spark = st.create_spark_session()
 
-    spark.conf.set('temporaryGcsBucket', params['temporaryGcsBucket'])
+    spark.conf.set('temporaryGcsBucket', params['temporarygcsbucket'])
 
     if st.execute_task(spark):
         print(params['id'] + " --> Ready")
