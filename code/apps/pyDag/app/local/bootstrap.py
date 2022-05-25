@@ -1,7 +1,6 @@
 from google.oauth2 import service_account
 from google.cloud import dataproc_v1 as dataproc
 from google.cloud import storage
-import configparser
 import argparse
 import os
 from pathlib import Path
@@ -18,7 +17,7 @@ class Bootstrap:
         if self.__credentials is not None:
             return self.__credentials
         else:                                     
-            self.__credentials = service_account.Credentials.from_service_account_file(r'C:\Users\ramse\...\pyDag\pyDag\config\atomic-key-348412-0c7115c249fb.json')
+            self.__credentials = service_account.Credentials.from_service_account_file(os.getcwd() + "/app/config/atomic-key-348412-0c7115c249fb.json")
             
         return self.__credentials
 
@@ -40,7 +39,7 @@ class Bootstrap:
                 credentials = credentials
             )
         elif typeclient == 'gcs':
-            client = storage.Client.from_service_account_file(r'C:\Users\ramse\...\pyDag\pyDag\config\atomic-key-348412-0c7115c249fb.json')
+            client = storage.Client.from_service_account_file(os.getcwd() + "/app/config/atomic-key-348412-0c7115c249fb.json")
         else:
             pass
         return client     
