@@ -1,6 +1,6 @@
 from enum import Enum
 import json
-from enums import TypeEngine, TypeStorage
+from enums import TypeEngine
 from cache.cache import Cache
 import configparser
 from google.cloud import storage, exceptions
@@ -20,7 +20,7 @@ class ScriptHandler:
         engine =  TypeEngine[_path[2]]
         try:
             config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + '/config/config.cfg'))
+            config.read_file(open(os.getcwd() + 'app/config/config.cfg'))
             service_account = config.get('GCP','service-account')
             storage_client = storage.Client.from_service_account_json(service_account)
             bucket = storage_client.get_bucket(_path[0])
@@ -33,7 +33,7 @@ class ScriptHandler:
 
     def __add_spark_params(self, params_dict):
         config = configparser.ConfigParser()
-        config.read_file(open(os.getcwd() + '/config/config.cfg'))
+        config.read_file(open(os.getcwd() + 'app/config/config.cfg'))
         spark_config = dict(config.items('SPARK-CONFIG'))
         for k, v in spark_config.items():
             params_dict[k] = v
@@ -41,7 +41,20 @@ class ScriptHandler:
         return str(json.dumps(params_dict))
 
     def __get_connections(self, p_dict):
-        return {k: v for k, v in p_dict.items() if k[0:2] == '**'}
+        
+        config = configparser.ConfigParser()
+        config.read_file(open(os.getcwd() + 'app/config/config.cfg'))
+
+        _conns =  {k.replace('**', ''): v for k, v in p_dict.items() 
+                    if k[0:2] == '**'}
+        
+        for k, v in _conns.items():
+            _k = k.split('_')           
+            service_account = config.get(_k[0],_k[1])
+            _conns[k] = os.getcwd() + service_account
+        
+        return _conns
+
 
     def __get_variables(self, p_dict):
          return {k: v for k, v in p_dict.items()
@@ -54,7 +67,6 @@ class ScriptHandler:
     def __get_script(self, _path, engine, params):
 
         script = None
-        storage = TypeStorage[_path[0]]
         key = '{}.{}.{}.{}.{}.{}'.format(self.dag_data['dag_id'], self.id, *_path[1:])
 
         if self.dag_data['script_cache']:
@@ -72,13 +84,23 @@ class ScriptHandler:
 
         _path = self.script.split('.')
         _engine = TypeEngine[_path[-2]]
-        params_dict = {}        
+        _params = {}
+        _connections = {}
 
         if len(self.params) > 0:
             params_dict  = json.loads(self.params.replace("'",'"'))
-            params_dict = self.__get_parameters(params_dict)
+            _params = self.__get_parameters(params_dict)
+            _connections = self.__get_connections(params_dict)
+            #_variables = self.__get_variables(params_dict)
+        
+        for k, v in _connections.items():
+            _params[k] = v
+
+        # for k, v in _variables.items():
+        #     _params[k] = v
         
         if _engine  == TypeEngine.spark:
-            return _path[1:], _engine, self.__add_spark_params(params_dict)
+            return _path[1:], _engine, self.__add_spark_params(_params)
         else:
-            return self.__get_script(_path, _engine, params_dict)
+            return self.__get_script(_path, _engine, _params)
+            

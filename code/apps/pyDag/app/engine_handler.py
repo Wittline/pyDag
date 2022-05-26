@@ -11,7 +11,7 @@ class EngineHandler:
         return config.get('engines', typeEngine.name)
 
     def __create_engine(self, config_engine):
-                
+                        
         _path = config_engine.split(".")
         mod = importlib.import_module(config_engine, ".")
         cls = getattr(mod, _path[-1])       
