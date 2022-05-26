@@ -26,7 +26,7 @@ class DPClient:
             return self.__credentials
         else:
             config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + '/config/config.cfg'))                                            
+            config.read_file(open(os.getcwd() + 'app/config/config.cfg'))                                            
             self.__credentials = service_account.Credentials.from_service_account_file(
                 config.get('GCP','service-account'))
             

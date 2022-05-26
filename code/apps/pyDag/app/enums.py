@@ -19,10 +19,11 @@ class TaskState(Enum):
 class TypeEngine(Enum):
     bq  = '.sql'
     spark = '.py'
+    iac = '.iac'
 
 class TypeStorage(Enum):
     local = 0
     gcs = 1
     s3 = 2
-    database = 3    
+    database = 3
 
