@@ -19,13 +19,13 @@ services:
   #     #     - ./pg_data/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf:z
   #     #     - ./pg_data/postgresql.conf:/var/lib/postgresql/data/postgresql.conf:z
 
-  pydag:
-      build: ./pyDag/
-      container_name: pydag
-      depends_on:
-        - redis      
-      volumes:          
-          - ./pyDag/app/logs/filelogs.log:/pyDag/app/logs/filelogs.log:z          
+  # pydag:
+  #     build: ./pyDag/
+  #     container_name: pydag
+  #     depends_on:
+  #       - redis      
+  #     volumes:          
+  #         - ./pyDag/app/logs/filelogs.log:/pyDag/app/logs/filelogs.log:z          
 
   redis:
     image: 'redis:4-alpine'

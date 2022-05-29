@@ -2,16 +2,19 @@ from multiprocessing.pool import ThreadPool as Pool
 from error import ExecutionError
 
 class ParallelProcessor:
-    def __init__(self, cpus):   
+    def __init__(self, cpus,logger):   
         self.cpus = cpus
-        self.pool = None        
+        self.pool = None
+        self.logger = logger
     
     def __execute_task(self, task, func):
 
         item = (task, func(task))
 
         if isinstance(item[1], Exception):
-            raise ExecutionError('Task "{0}" execution error: {1}'.format(item[0], item[1]))
+            error_msg = 'Task "{0}" execution error: {1}'.format(item[0], item[1])
+            self.logger.info(error_msg)
+            raise ExecutionError(error_msg)
 
         return item
         

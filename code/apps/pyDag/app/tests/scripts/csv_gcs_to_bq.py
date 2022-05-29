@@ -31,7 +31,7 @@ class SparkTask:
 
             df = df.withColumnRenamed("col1","id")\
                 .withColumnRenamed("col2","category")\
-                .withColumnRenamed("col3","lastdate")        
+                .withColumnRenamed("col3","lastdate")
 
             
             df.write.format('bigquery') \

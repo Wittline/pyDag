@@ -1,6 +1,7 @@
 from google.cloud import bigquery
 from engines.bq.bqerror import BQError
 import configparser
+import os
 
 class BQClient:
     def __init__(self):
@@ -8,8 +9,8 @@ class BQClient:
 
     def __get_client_service_account(self):
         config = configparser.ConfigParser()
-        config.read_file(open('app/config/config.cfg'))
-        return bigquery.Client.from_service_account_file(
+        config.read_file(open(os.getcwd() + '/config/config.cfg'))           
+        return bigquery.Client.from_service_account_json(
             config.get('GCP','service-account'))
 
     def run_script(self, script, params):
