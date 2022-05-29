@@ -24,11 +24,9 @@ class DPClient:
 
         if self.__credentials is not None:
             return self.__credentials
-        else:
-            config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + 'app/config/config.cfg'))                                            
+        else:                                       
             self.__credentials = service_account.Credentials.from_service_account_file(
-                config.get('GCP','service-account'))
+                self.gcp_data['GCP_service-account'])
             
         return self.__credentials
 
@@ -50,10 +48,7 @@ class DPClient:
                 credentials = credentials
             )
         elif typeclient == 'gcs':
-            config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + '/config/config.cfg'))
-            service_account = config.get('GCP','service-account')
-            client = storage.Client.from_service_account_json(service_account)
+            client = storage.Client(credentials=self.__get_gredentials())     
         else:
             pass
         return client
@@ -89,7 +84,7 @@ class DPClient:
         client = self.__get_client('job')
         
         job = {
-            "placement": {"cluster_name": self.gcp_data['dataproc-cluster-name']},          
+            "placement": {"cluster_name": self.gcp_data['cluster_name']},          
             "pyspark_job": {"main_python_file_uri": "gs://{}/{}/{}".format(self.bucket, self.folder, self.script + '.py'),
                    "args": ['--params', self.params],                   
                    "jar_file_uris": self.jars,
@@ -99,7 +94,7 @@ class DPClient:
         try:
 
             operation = client.submit_job_as_operation(
-                request={"project_id": self.gcp_data['project'], "region": self.gcp_data['region'], "job": job }
+                request={"project_id": self.gcp_data['project_name'], "region": self.gcp_data['region'], "job": job }
             )
 
             response = operation.result()        
@@ -124,20 +119,27 @@ class DPClient:
         self.bucket = script[0]
         self.folder = script[1]
         self.script = script[3]
-         
-        config = configparser.ConfigParser()
-        config.read_file(open('config/config.cfg'))
 
-        gcp_config = dict(config.items('GCP'))
-        for k, v in gcp_config.items():
-            self.gcp_data[k] = v        
+        # params for script
+        self.params = params                     
+
+        dict_params = json.loads(self.params)
         
-        self.params = params
-        jars = json.loads(params)['spark.jars'].split(',')
+        jars = dict_params['spark.jars'].split(',')
 
         for jar in jars:
             self.jars.append(jar)
-        
+
+        self.gcp_data = {
+            "cluster_name" : "",
+            "project_name" : "",
+            "region" : "",
+            "GCP_service-account": ""
+        }
+
+        for k, v in self.gcp_data.items():
+            self.gcp_data[k] = dict_params[k]
+                
         result = self.__submit_job()
     
         return result       

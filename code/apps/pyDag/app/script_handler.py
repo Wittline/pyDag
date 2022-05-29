@@ -20,7 +20,7 @@ class ScriptHandler:
         engine =  TypeEngine[_path[2]]
         try:
             config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + 'app/config/config.cfg'))
+            config.read_file(open(os.getcwd() + '/config/config.cfg'))
             service_account = config.get('GCP','service-account')
             storage_client = storage.Client.from_service_account_json(service_account)
             bucket = storage_client.get_bucket(_path[0])
@@ -33,17 +33,17 @@ class ScriptHandler:
 
     def __add_spark_params(self, params_dict):
         config = configparser.ConfigParser()
-        config.read_file(open(os.getcwd() + 'app/config/config.cfg'))
+        config.read_file(open(os.getcwd() + '/config/config.cfg'))
         spark_config = dict(config.items('SPARK-CONFIG'))
         for k, v in spark_config.items():
             params_dict[k] = v
-        params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id       
+        params_dict['id'] = self.dag_data['dag_id'] + '_' + self.id 
         return str(json.dumps(params_dict))
 
     def __get_connections(self, p_dict):
         
         config = configparser.ConfigParser()
-        config.read_file(open(os.getcwd() + 'app/config/config.cfg'))
+        config.read_file(open(os.getcwd() + '/config/config.cfg'))
 
         _conns =  {k.replace('**', ''): v for k, v in p_dict.items() 
                     if k[0:2] == '**'}
@@ -51,7 +51,7 @@ class ScriptHandler:
         for k, v in _conns.items():
             _k = k.split('_')           
             service_account = config.get(_k[0],_k[1])
-            _conns[k] = os.getcwd() + service_account
+            _conns[k] = os.getcwd() + '/' + service_account
         
         return _conns
 
@@ -99,8 +99,11 @@ class ScriptHandler:
         # for k, v in _variables.items():
         #     _params[k] = v
         
-        if _engine  == TypeEngine.spark:
+        if _engine  == TypeEngine.spark:            
             return _path[1:], _engine, self.__add_spark_params(_params)
+        elif _engine  == TypeEngine.iac:            
+            script, engine, params = self.__get_script(_path, _engine, _params)            
+            return [_path[-1], script], engine, params
         else:
             return self.__get_script(_path, _engine, _params)
             

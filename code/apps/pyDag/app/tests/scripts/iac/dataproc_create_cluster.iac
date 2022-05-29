@@ -1,0 +1,63 @@
+from google.oauth2 import service_account
+from google.cloud import dataproc_v1 as dataproc
+from google.cloud import storage
+import os
+
+class dataproc_create_cluster:
+
+    def __init__(self):
+        self.__credentials = None
+
+    def __get_gredentials(self):
+
+        if self.__credentials is not None:
+            return self.__credentials
+        else:                                     
+            self.__credentials = service_account.Credentials.from_service_account_file(r"{GCP_service-account}")
+            
+        return self.__credentials
+
+    
+    def __get_client(self, typeclient):
+
+        client_options={{"api_endpoint": "{region}-dataproc.googleapis.com:443"}}
+        credentials = self.__get_gredentials()
+        client = None
+
+        if typeclient == 'cluster':
+            client = dataproc.ClusterControllerClient(
+                client_options=client_options,
+                credentials = credentials
+            )
+        else:
+            pass
+        return client     
+
+
+    def create_cluster(self):
+        client = self.__get_client('cluster')
+        
+        cluster = {{
+            "project_id": "{project_name}",
+            "cluster_name": "{cluster_name}",
+            "config": {{
+                "master_config": {{"num_instances": 1, "machine_type_uri": "custom-1-4096", "disk_config":{{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}}}},
+                "worker_config": {{"num_instances": 2, "machine_type_uri": "custom-1-4096", "disk_config":{{"boot_disk_type":"pd-standard", "boot_disk_size_gb":100, "num_local_ssds":1}}}},
+                "software_config": {{"image_version": "1.5-debian10"}}
+            }},
+        }}
+
+        print("Creating cluster {cluster_name} in project {project_name} and region {region}.")
+
+        operation = client.create_cluster(
+            request={{"project_id": "{project_name}", "region": "{region}", "cluster": cluster }}
+        )
+
+        result = operation.result()        
+    
+        print("Cluster {{0}} created successfully.".format(result.cluster_name))
+
+        return True
+            
+    def run_script(self):
+        self.create_cluster()

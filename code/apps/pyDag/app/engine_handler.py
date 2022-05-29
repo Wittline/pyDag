@@ -17,8 +17,7 @@ class EngineHandler:
         cls = getattr(mod, _path[-1])       
         return cls()
 
-    def run_script(self, script, typeengine, params):
-        
+    def run_script(self, script, typeengine, params):        
         config_engine = self.__get_engine_config(typeengine)        
         engine = self.__create_engine(config_engine)
         return engine.run_script(script, params)
