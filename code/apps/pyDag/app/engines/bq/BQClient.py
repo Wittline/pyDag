@@ -4,12 +4,12 @@ import configparser
 import os
 
 class BQClient:
-    def __init__(self):
-        pass
+    def __init__(self, logger):
+        self.logger = logger
 
     def __get_client_service_account(self):
         config = configparser.ConfigParser()
-        config.read_file(open(os.getcwd() + '/config/config.cfg'))           
+        config.read_file(open(os.getcwd() + '/config/config.cfg'))
         return bigquery.Client.from_service_account_json(
             config.get('GCP','service-account'))
 
@@ -17,6 +17,6 @@ class BQClient:
         client = self.__get_client_service_account()
         query_job = client.query(script.format(**params))
         if query_job.errors:
-            raise BQError('Error processing query: {0}'.format(query_job.errors))
+            self.logger.info(9,[query_job.errors], True, BQError)            
 
         return True

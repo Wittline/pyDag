@@ -4,8 +4,8 @@ import os
 
 class IACClient:
 
-    def __init__(self):
-        pass    
+    def __init__(self, logger):
+        self.logger = logger
 
     def __create_iac(self, name_module, script):
                 
@@ -14,7 +14,7 @@ class IACClient:
                 
         mod = importlib.import_module("engines.iac." + name_module, ".")
         cls = getattr(mod, name_module)
-        return cls()   
+        return cls()
 
         
     def run_script(self, script, params):
@@ -24,6 +24,6 @@ class IACClient:
             iac.run_script()
             return True
         except Exception as ex:
-            raise IACError('Error processing IAC script: {0}'.format(str(ex)))
+            self.logger.info(14,[str(ex)], True, IACError)            
 
         
