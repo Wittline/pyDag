@@ -11,11 +11,10 @@ class ParallelProcessor:
 
         item = (task, func(task))
 
-        if isinstance(item[1], Exception):
-            error_msg = 'Task "{0}" execution error: {1}'.format(item[0], item[1])
-            self.logger.info(error_msg)
-            raise ExecutionError(error_msg)
-
+        if isinstance(item[1], Exception):                        
+            params = [item[0], item[1]]
+            self.logger.info(1, params, True, ExecutionError)
+            
         return item
         
     def process_tasks(self, tasks, func):

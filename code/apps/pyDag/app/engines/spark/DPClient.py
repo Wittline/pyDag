@@ -10,14 +10,15 @@ import os
 
 class DPClient:
 
-    def __init__(self):
+    def __init__(self, logger):
         self.bucket = None
         self.folder = None
         self.script = None
         self.params = None
         self.jars = []
         self.gcp_data = {}
-        self.__credentials = None        
+        self.__credentials = None 
+        self.logger = logger       
     
 
     def __get_gredentials(self):
@@ -81,6 +82,8 @@ class DPClient:
 
     def __submit_job(self):
 
+        self.logger.info(17, [self.script + '.py', self.gcp_data['cluster_name']])
+
         client = self.__get_client('job')
         
         job = {
@@ -103,14 +106,14 @@ class DPClient:
 
                 output = self.__get_output_from_bucket(response.driver_output_resource_uri)
 
-                print(f"Script { self.script} finished successfully: {output}")
+                self.logger.info(16,[self.script, output])                
 
                 return True
 
         except Exception as ex:
             url = self.__get_bucket_output(str(ex))
             output = self.__get_output_from_bucket(url)
-            raise DPError('Error processing script: {0}:{1}'.format(self.script, output))     
+            self.logger.info(15,[self.script, output], True, DPError)
         
 
     def run_script(self, script, params):
@@ -142,4 +145,4 @@ class DPClient:
                 
         result = self.__submit_job()
     
-        return result       
+        return result

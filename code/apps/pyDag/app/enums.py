@@ -26,4 +26,3 @@ class TypeStorage(Enum):
     gcs = 1
     s3 = 2
     database = 3
-
