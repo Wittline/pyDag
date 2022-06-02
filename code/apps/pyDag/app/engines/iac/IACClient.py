@@ -14,7 +14,7 @@ class IACClient:
                 
         mod = importlib.import_module("engines.iac." + name_module, ".")
         cls = getattr(mod, name_module)
-        return cls()
+        return cls(self.logger)
 
         
     def run_script(self, script, params):
@@ -24,6 +24,6 @@ class IACClient:
             iac.run_script()
             return True
         except Exception as ex:
-            self.logger.info(14,[str(ex)], True, IACError)            
+            self.logger.info(14,[str(ex)], True, IACError)        
 
         

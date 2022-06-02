@@ -15,7 +15,8 @@ class BQClient:
 
     def run_script(self, script, params):
         client = self.__get_client_service_account()
-        query_job = client.query(script.format(**params))
+        script = script.format(**params)
+        query_job = client.query(script)
         if query_job.errors:
             self.logger.info(9,[query_job.errors], True, BQError)            
 

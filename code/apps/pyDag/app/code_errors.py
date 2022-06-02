@@ -17,5 +17,7 @@ CodeErrors = {
             15: "Error processing DP script: {0}:{1}" ,
             16: "Script {0} finished successfully: {1}",
             17: "Submitting script {0} to clsuter {1} Dataproc",
-            18: "Dag success with results: {0}"
+            18: "Dag success with results: {0}",
+            19: "Creating cluster {0} in project {1} and region {2}.",
+            20: "Cluster {0} created successfully."
     }
