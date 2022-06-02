@@ -5,8 +5,9 @@ import os
 
 class dataproc_create_cluster:
 
-    def __init__(self):
+    def __init__(self, logger):
         self.__credentials = None
+        self.logger = logger
 
     def __get_gredentials(self):
 
@@ -47,15 +48,17 @@ class dataproc_create_cluster:
             }},
         }}
 
-        print("Creating cluster {cluster_name} in project {project_name} and region {region}.")
+        self.logger.info(19, ['{cluster_name}', '{project_name}', '{region}'])
 
         operation = client.create_cluster(
             request={{"project_id": "{project_name}", "region": "{region}", "cluster": cluster }}
         )
 
-        result = operation.result()        
-    
-        print("Cluster {{0}} created successfully.".format(result.cluster_name))
+        result = operation.result()
+
+        cluster_created = result.cluster_name
+
+        self.logger.info(20, [cluster_created])
 
         return True
             

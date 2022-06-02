@@ -1,7 +1,11 @@
 import argparse
+import pyspark
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType,StructField, StringType, IntegerType 
+from pyspark.sql.types import ArrayType, DoubleType, BooleanType, DateType
 from pyspark.sql.functions import *
 import json
+
 
 class SparkTask:
 
@@ -20,26 +24,31 @@ class SparkTask:
     
     def execute_task(self, spark):
 
-            df = spark\
+        schema = StructType() \
+            .add("col1",IntegerType(),True) \
+            .add("col2",StringType(),True) \
+            .add("col3",DateType(),True)
+            
+        df = spark\
                 .read\
-                .option("inferSchema","true")\
+                .schema(schema) \
                 .option("header","true")\
                 .csv("gs://{}/{}/{}".format(
                     self.params['bucket'],
                     self.params['folder'], 
                     self.params['file_name']))
 
-            df = df.withColumnRenamed("col1","id")\
+        df = df.withColumnRenamed("col1","id")\
                 .withColumnRenamed("col2","category")\
                 .withColumnRenamed("col3","lastdate")
 
             
-            df.write.format('bigquery') \
+        df.write.format('bigquery') \
                 .option('table', '{}.{}'.format(self.params['dataset'], self.params['destination_table'])) \
                 .mode("overwrite") \
                 .save()
 
-            return True
+        return True
 
 
 if __name__ == '__main__':

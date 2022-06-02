@@ -12,4 +12,4 @@ class Engine(ScriptHandler, EngineHandler):
     
     def run(self):
         script, typeengine, params = self.format_script()  
-        self.run_script(script, typeengine, params)
+        return self.run_script(script, typeengine, params)
