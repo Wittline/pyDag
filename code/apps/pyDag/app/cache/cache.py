@@ -6,7 +6,7 @@ class Cache:
     def set(k,v, e):
         try:
             r = redis.StrictRedis(
-                host='localhost', 
+                host='redis', 
                 port=6379, 
                 decode_responses=True)
 
@@ -19,7 +19,7 @@ class Cache:
     def get(k):
         try:        
             r = redis.StrictRedis(
-                host='localhost', 
+                host='redis', 
                 port=6379, 
                 decode_responses=True)
 
@@ -34,7 +34,7 @@ class Cache:
     def delete(k):
         try:
             r = redis.StrictRedis(
-                host='localhost', 
+                host='redis', 
                 port=6379, 
                 decode_responses=True)
 

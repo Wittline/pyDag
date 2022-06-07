@@ -10,4 +10,4 @@ RUN pip install importlib
 
 COPY ./app ./app
 
-CMD ["python", "u", "./app/tests/tests/test.py"]
+CMD ["python", "-u", "./app/test.py"]

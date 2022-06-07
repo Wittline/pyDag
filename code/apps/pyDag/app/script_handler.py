@@ -21,7 +21,7 @@ class ScriptHandler:
         engine =  TypeEngine[_path[2]]
         try:
             config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + '/config/config.cfg'))
+            config.read_file(open(os.getcwd() + '/app/config/config.cfg'))
             service_account = config.get('GCP','service-account')
             storage_client = storage.Client.from_service_account_json(service_account)
             bucket = storage_client.get_bucket(_path[0])
@@ -34,7 +34,7 @@ class ScriptHandler:
 
     def __add_spark_params(self, params_dict):
         config = configparser.ConfigParser()
-        config.read_file(open(os.getcwd() + '/config/config.cfg'))
+        config.read_file(open(os.getcwd() + '/app/config/config.cfg'))
         spark_config = dict(config.items('SPARK-CONFIG'))
         for k, v in spark_config.items():
             params_dict[k] = v
@@ -44,7 +44,7 @@ class ScriptHandler:
     def __get_connections(self, p_dict):
         
         config = configparser.ConfigParser()
-        config.read_file(open(os.getcwd() + '/config/config.cfg'))
+        config.read_file(open(os.getcwd() + '/app/config/config.cfg'))
 
         _conns =  {k.replace('**', ''): v for k, v in p_dict.items() 
                     if k[0:2] == '**'}

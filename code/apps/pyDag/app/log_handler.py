@@ -35,7 +35,7 @@ class LogHandler():
     def close(self):                
         try:
             config = configparser.ConfigParser()
-            config.read_file(open(os.getcwd() + '/config/config.cfg'))
+            config.read_file(open(os.getcwd() + '/app/config/config.cfg'))
             service_account = config.get('GCP','service-account')
             bucket_name = config.get('log','bucket')
             folder_name = config.get('log','folder')
@@ -51,7 +51,8 @@ class LogHandler():
         self.logger.info(error_msg)
         if raise_error:
             self.close()
-            raise error_type(error_msg)                 
+            raise error_type(error_msg)
+            
 
     
 
