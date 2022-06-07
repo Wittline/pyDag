@@ -9,7 +9,7 @@ class EngineHandler:
 
     def __get_engine_config(self, typeEngine):
         config = configparser.ConfigParser()
-        config.read_file(open(os.getcwd() + '/config/config.cfg'))
+        config.read_file(open(os.getcwd() + '/app/config/config.cfg'))
         return config.get('engines', typeEngine.name)
 
     def __create_engine(self, config_engine):

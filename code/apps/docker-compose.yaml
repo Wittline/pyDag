@@ -2,32 +2,24 @@ version: '3'
 
 services:
 
-  # db:
-  #     container_name: pg_container
-  #     image: postgres
-  #     restart: always
-  #     environment:
-  #         POSTGRES_USER: "postgres"
-  #         POSTGRES_PASSWORD: "12345"
-  #         POSTGRES_DB: "db"
-  #         POSTGRES_HOST_AUTH_METHOD: trust
-  #     ports:
-  #         - "5432:5432"
-  #     networks:
-  #       - spark
-  #     # volumes:
-  #     #     - ./pg_data/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf:z
-  #     #     - ./pg_data/postgresql.conf:/var/lib/postgresql/data/postgresql.conf:z
-
-  # pydag:
-  #     build: ./pyDag/
-  #     container_name: pydag
-  #     depends_on:
-  #       - redis      
-  #     volumes:          
-  #         - ./pyDag/app/logs/filelogs.log:/pyDag/app/logs/filelogs.log:z          
+  pydag:
+      build: ./pyDag/
+      container_name: pydag
+      depends_on:
+        - redis
+      networks:
+        - redis
+      volumes:          
+          - ./pyDag/app/logs/:/pyDag/app/logs/:z    
 
   redis:
     image: 'redis:4-alpine'
     ports:
       - '6379:6379'
+    networks:
+      - redis       
+
+networks:
+  redis:
+    driver: bridge
+

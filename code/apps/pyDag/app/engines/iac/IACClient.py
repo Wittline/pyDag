@@ -9,7 +9,7 @@ class IACClient:
 
     def __create_iac(self, name_module, script):
                 
-        with open('engines/iac/' + name_module + '.py', 'w') as file:
+        with open('app/engines/iac/' + name_module + '.py', 'w') as file:
             file.write(script)
                 
         mod = importlib.import_module("engines.iac." + name_module, ".")
