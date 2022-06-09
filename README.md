@@ -3,7 +3,7 @@
 
 Check the article here:  <a href="https://itnext.io/how-to-build-a-dag-based-task-scheduling-tool-for-multiprocessor-systems-using-python-d11a093a835b">How to build a DAG based Task Scheduling tool for Multiprocessor systems using python</a>
 
-## Scheduling Big Data Workloads in the Cloud with pyDag
+## Scheduling Big Data Workloads and Data Pipelines in the Cloud with pyDag
 
 <p align="center">
   <img 
