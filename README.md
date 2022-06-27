@@ -11,8 +11,10 @@
   >
 </p>
 
+
 ### pyDag's Architecture for a Multiprocessor Machine.
 An object of the pyDag class contains everything mentioned below, this is an whole overview of the architecture.
+
 
 <p align="center">
   <img 
