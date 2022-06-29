@@ -1,6 +1,5 @@
 # pyDag
 
-
 ### Check the article here:  <a href="https://itnext.io/how-to-build-a-dag-based-task-scheduling-tool-for-multiprocessor-systems-using-python-d11a093a835b">How to build a DAG based Task Scheduling tool for Multiprocessor systems using python</a>
 
 ## Scheduling Big Data Workloads and Data Pipelines in the Cloud with pyDag
@@ -11,10 +10,8 @@
   >
 </p>
 
-
 ### pyDag's Architecture for a Multiprocessor Machine.
 An object of the pyDag class contains everything mentioned below, this is an whole overview of the architecture.
-
 
 <p align="center">
   <img 
@@ -42,7 +39,6 @@ An object of the pyDag class contains everything mentioned below, this is an who
 #### GCP - Dataproc
 - Go to Dataproc
 - Now click on Enable API
-
 
 <p align="center">
   <img 
